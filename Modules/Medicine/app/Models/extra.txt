@@ -1,0 +1,56 @@
+// Get a medicine with all its relationships
+$medicine = Medicine::with(['categories', 'doseForms', 'atcCodes'])->find($id);
+
+// Access pivot data
+$strength = $medicine->categories->first()->pivot->strength;
+$text = $medicine->categories->first()->pivot->text;
+
+// Create a new relationship with pivot data
+$medicine->categories()->attach($categoryId, [
+    'strength' => '500mg',
+    'text' => 'Take twice daily',
+    'dose_form_id' => $doseFormId,
+    'atc_id' => $atcId
+]);
+
+// Update pivot data
+$medicine->categories()->updateExistingPivot($categoryId, [
+    'strength' => '250mg',
+    'text' => 'Take once daily'
+]);
+
+   // Get only active medicines
+   Medicine::active()->get();
+   
+   // Get medicines with specific status
+   Medicine::withStatus(ActiveStatus::Pending)->get();
+   // or
+   Medicine::withStatus('pending')->get();
+
+
+// Create a new medicine with status
+$medicine = Medicine::create([
+    'name' => 'Medicine Name',
+    'status' => ActiveStatus::Draft
+]);
+
+// Update status (this will validate the transition)
+$medicine->status = ActiveStatus::Pending;
+$medicine->save();
+
+// Check current status
+if ($medicine->status === ActiveStatus::Active) {
+    // Do something
+}
+
+// Get status information
+$statusColor = $medicine->status->color();
+$statusIcon = $medicine->status->icon();
+$statusDescription = $medicine->status->description();
+
+The status flow is:
+Draft → Pending → Active/Inactive
+Active ↔ Inactive
+Active/Inactive → Discontinued/Archived
+Any state except Deleted → Deleted
+Deleted is final (no transitions out)

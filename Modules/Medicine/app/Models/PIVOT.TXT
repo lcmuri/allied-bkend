@@ -1,0 +1,138 @@
+Would you like me to:
+Add similar methods for the DoseForm relationships?
+Add methods for bulk operations?
+Add validation methods for the pivot data?
+
+
+// ... existing code ...
+
+    /**
+     * Add a category with pivot data.
+     */
+    public function addCategory(int $categoryId, array $pivotData = []): void
+    {
+        $this->categories()->attach($categoryId, array_merge([
+            'status' => ActiveStatus::Active->value
+        ], $pivotData));
+    }
+
+    /**
+     * Update a category's pivot data.
+     */
+    public function updateCategory(int $categoryId, array $pivotData): void
+    {
+        $this->categories()->updateExistingPivot($categoryId, $pivotData);
+    }
+
+    /**
+     * Remove a category with optional soft delete.
+     */
+    public function removeCategory(int $categoryId, bool $softDelete = true): void
+    {
+        if ($softDelete) {
+            $this->categories()->updateExistingPivot($categoryId, [
+                'status' => ActiveStatus::Deleted->value
+            ]);
+        } else {
+            $this->categories()->detach($categoryId);
+        }
+    }
+
+    /**
+     * Add multiple categories with pivot data.
+     */
+    public function addCategories(array $categories): void
+    {
+        $formattedData = collect($categories)->mapWithKeys(function ($data, $categoryId) {
+            return [
+                $categoryId => array_merge([
+                    'status' => ActiveStatus::Active->value
+                ], is_array($data) ? $data : [])
+            ];
+        })->all();
+
+        $this->categories()->attach($formattedData);
+    }
+
+    /**
+     * Sync categories with pivot data while preserving existing pivot data.
+     */
+    public function syncCategories(array $categories, bool $detaching = true): void
+    {
+        $formattedData = collect($categories)->mapWithKeys(function ($data, $categoryId) {
+            return [
+                $categoryId => array_merge([
+                    'status' => ActiveStatus::Active->value
+                ], is_array($data) ? $data : [])
+            ];
+        })->all();
+
+        $this->categories()->sync($formattedData, $detaching);
+    }
+
+    /**
+     * Get active category relationships.
+     */
+    public function activeCategories()
+    {
+        return $this->categories()->wherePivot('status', ActiveStatus::Active->value);
+    }
+
+    /**
+     * Get soft-deleted category relationships.
+     */
+    public function deletedCategories()
+    {
+        return $this->categories()->wherePivot('status', ActiveStatus::Deleted->value);
+    }
+
+    /**
+     * Restore a soft-deleted category relationship.
+     */
+    public function restoreCategory(int $categoryId): void
+    {
+        $this->categories()->updateExistingPivot($categoryId, [
+            'status' => ActiveStatus::Active->value
+        ]);
+    }
+// ... existing code ...
+
+// Add a single category with pivot data
+$medicine->addCategory($categoryId, [
+    'strength' => '500mg',
+    'description' => 'Take twice daily',
+    'dose_form_id' => $doseFormId,
+    'atc_id' => $atcId
+]);
+
+// Update pivot data for a category
+$medicine->updateCategory($categoryId, [
+    'strength' => '250mg',
+    'description' => 'Take once daily'
+]);
+
+// Soft delete a category relationship
+$medicine->removeCategory($categoryId); // soft delete by default
+$medicine->removeCategory($categoryId, false); // hard delete
+
+// Add multiple categories with pivot data
+$medicine->addCategories([
+    1 => ['strength' => '500mg'],
+    2 => ['strength' => '250mg'],
+    3 => ['strength' => '100mg']
+]);
+
+// Sync categories while preserving pivot data
+$medicine->syncCategories([
+    1 => ['strength' => '500mg'],
+    2 => ['strength' => '250mg']
+]);
+
+// Get only active category relationships
+$activeCategories = $medicine->activeCategories()->get();
+
+// Get soft-deleted category relationships
+$deletedCategories = $medicine->deletedCategories()->get();
+
+// Restore a soft-deleted category relationship
+$medicine->restoreCategory($categoryId);

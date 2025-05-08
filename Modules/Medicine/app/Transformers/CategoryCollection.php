@@ -18,9 +18,9 @@ class CategoryCollection extends ResourceCollection
             'data' => CategoryResource::collection($this->collection),
             'meta' => [
                 'total' => $this->collection->count(),
-                'per_page' => 15, // Adjust based on your pagination
-                'current_page' => $this->currentPage(),
-                'last_page' => $this->lastPage(),
+                // 'per_page' => 15, // Adjust based on your pagination
+                // 'current_page' => $this->currentPage(),
+                // 'last_page' => $this->lastPage(),
             ],
         ];
     }

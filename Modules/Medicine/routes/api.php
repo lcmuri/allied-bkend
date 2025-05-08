@@ -8,5 +8,6 @@ use Modules\Medicine\Http\Controllers\MedicineController;
 //     Route::apiResource('medicine', MedicineController::class)->names('medicine');
 // });
 
-
-Route::apiResource('category', CategoryController::class)->names('category');
+Route::prefix('v1')->group(function () {
+    Route::apiResource('category', CategoryController::class)->names('category');
+});

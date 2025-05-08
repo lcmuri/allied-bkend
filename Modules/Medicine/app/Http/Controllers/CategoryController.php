@@ -21,7 +21,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $categories = Category::paginate(15);
+            $categories = Category::all();
             return new CategoryCollection($categories);
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to fetch categories');

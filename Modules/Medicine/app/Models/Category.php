@@ -4,7 +4,6 @@ namespace Modules\Medicine\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
@@ -40,26 +39,23 @@ class Category extends Model
             ->saveSlugsTo('slug');
     }
 
-    /**
-     * The medicines that belong to the category.
-     */
-    public function medicines(): BelongsToMany
+    // Generate URL for the category
+    public function getUrlAttribute()
     {
-        return $this->belongsToMany(Medicine::class, 'category_medicine')
-            ->withPivot(['category_id', 'atc_id', 'status', 'strength', 'description'])
-            ->withTimestamps();
+        return route('categories.show', $this->slug);
     }
 
-    /**
-     * The dose forms associated with this category through medicines.
-     */
-    public function doseForms(): BelongsToMany
+    // Count of all descendants
+    public function getDescendantsCountAttribute()
     {
-        return $this->belongsToMany(DoseForm::class, 'category_medicine')
-            ->withPivot(['medicine_id', 'atc_id', 'status', 'strength', 'description'])
-            ->withTimestamps();
+        return $this->descendants()->count();
     }
-    // ... existing 
+
+    // Count of direct children
+    public function getChildrenCountAttribute()
+    {
+        return $this->children()->count();
+    }
 
     // protected static function newFactory(): CategoryFactory
     // {

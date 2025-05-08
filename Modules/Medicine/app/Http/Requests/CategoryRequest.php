@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Product\Http\Requests;
+namespace Modules\Medicine\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BrandRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

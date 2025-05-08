@@ -12,13 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // TODO: 1 MEDICINE HAS 1 ATC CODE
-        Schema::create('atcs', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            //CASCADE?  $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('name');
-            $table->string('code')->unique(); // e.g., "A02BC02"
-            $table->tinyInteger('level'); // 1 (Anatomical) to 5 (Chemical)
+            $table->string('slug')->nullable();
+            $table->string('description')->nullable();
             $table->string('status')->default(ActiveStatus::Active->value);
             $table->timestamps();
         });
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('atcs');
+        Schema::dropIfExists('categories');
     }
 };

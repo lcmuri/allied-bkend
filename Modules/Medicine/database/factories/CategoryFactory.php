@@ -1,15 +1,15 @@
 <?php
 
-namespace Modules\Product\Database\Factories;
+namespace Modules\Medicine\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ProductFactory extends Factory
+class CategoryFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      */
-    protected $model = \Modules\Product\Models\Product::class;
+    protected $model = \Modules\Medicine\Models\Category::class;
 
     /**
      * Define the model's default state.

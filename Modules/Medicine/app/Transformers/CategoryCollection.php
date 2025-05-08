@@ -16,12 +16,12 @@ class CategoryCollection extends ResourceCollection
     {
         return [
             'data' => CategoryResource::collection($this->collection),
-            'meta' => [
-                'total' => $this->collection->count(),
-                // 'per_page' => 15, // Adjust based on your pagination
-                // 'current_page' => $this->currentPage(),
-                // 'last_page' => $this->lastPage(),
-            ],
+            // 'meta' => [
+            //     'total' => $this->collection->count(),
+            //     // 'per_page' => 15, // Adjust based on your pagination
+            //     // 'current_page' => $this->currentPage(),
+            //     // 'last_page' => $this->lastPage(),
+            // ],
         ];
     }
 
@@ -33,6 +33,7 @@ class CategoryCollection extends ResourceCollection
     public function with(Request $request): array
     {
         return [
+            'total' => $this->collection->count(),
             'status' => 'success',
             'message' => 'Categories retrieved successfully',
         ];
